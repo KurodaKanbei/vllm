@@ -68,6 +68,24 @@ For C/C++ or CUDA changes, follow the
 [incremental compilation workflow](docs/contributing/incremental_build.md) to
 configure and perform incremental builds.
 
+### Long-running services
+
+- Treat an existing user-facing or traffic-serving instance as user-owned.
+  Never stop, restart, reconfigure, profile, or reuse its port or devices for
+  experiments unless the user explicitly authorizes that exact disruption. Run
+  benchmarks and profiling on a separate instance; if resources are
+  unavailable, stop and ask.
+- Never leave a user-facing server attached only to an agent tool's PTY or
+  execution session; those sessions are ephemeral and cleanup terminates their
+  child processes.
+- Use an available service supervisor, or a fully detached process when no
+  supervisor exists. Persist stdout and stderr to a log and record the PID.
+- For an authorized replacement, launch and verify the new instance before
+  cutting over, and retain a rollback path until traffic is healthy. Before
+  handing off, verify the detached process, listening address, health endpoint,
+  model, and serving configuration independently of the launch session. Report
+  the PID, log path, and endpoint to the user.
+
 ### Tests
 
 > Requires [Environment setup](#environment-setup) and [Installing dependencies](#installing-dependencies).
